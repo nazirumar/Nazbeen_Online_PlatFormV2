@@ -64,7 +64,7 @@ if all([ADMIN_USER_NAME, ADMIN_USER_EMAIL]):
     MANAGERS=ADMINS
 
 
-ALLOWED_HOSTS = [".nazbeen-online-platform.onrender.com"]
+ALLOWED_HOSTS = [".nazbeen-online-platformv2.onrender.com"]
 if DEBUG:
     ALLOWED_HOSTS.append("localhost")
     ALLOWED_HOSTS.append("127.0.0.1")
