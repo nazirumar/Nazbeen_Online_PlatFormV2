@@ -1,0 +1,123 @@
+<div class="relative">
+    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+      <svg
+        class="w-5 h-5 text-gray-500 dark:text-gray-400"
+        aria-hidden="true"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 20 20"
+      >
+        <path
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
+        />
+      </svg>
+      <span class="sr-only">Search icon</span>
+    </div>
+  
+    <input
+      id="searchInput"
+      type="text"
+      name="q"
+      placeholder="Search..."
+      class="block w-full p-3 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+    />
+  </div>
+  
+  <div
+    id="resultsContainer"
+    class="hidden mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg dark:bg-gray-800 dark:border-gray-700"
+  ></div>
+  
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const searchInput = document.getElementById("searchInput");
+      const resultsContainer = document.getElementById("resultsContainer");
+  
+      searchInput.addEventListener("input", async function () {
+        const query = this.value.trim();
+  
+        if (query.length === 0) {
+          resultsContainer.classList.add("hidden");
+          resultsContainer.innerHTML = "";
+          return;
+        }
+  
+        try {
+          const searchUrl = "{% url 'search_api' %}";
+          const response = await fetch(`${searchUrl}?q=${encodeURIComponent(query)}`);
+          const results = await response.json();
+  
+          let html = "";
+  
+          if (results.categories.length) {
+            html += `
+              <h4 class="font-bold text-lg mb-2 text-gray-900 dark:text-gray-200">Categories</h4>`;
+            results.categories.forEach((category) => {
+              html += `
+                <div class="py-1">
+                  <a href="/categories/${category.id}/" class="text-blue-500 hover:underline">
+                    ${category.title}
+                  </a>
+                </div>`;
+            });
+          }
+  
+          if (results.subjects.length) {
+            html += `
+              <h4 class="font-bold text-lg mt-4 mb-2 text-gray-900 dark:text-gray-200">Subjects</h4>`;
+            results.subjects.forEach((subject) => {
+              html += `
+                <div class="py-1">
+                  <a href="/subjects/${subject.id}/" class="text-blue-500 hover:underline">
+                    ${subject.title}
+                  </a>
+                </div>`;
+            });
+          }
+  
+          if (results.lessons.length) {
+            html += `
+              <h4 class="font-bold text-lg mt-4 mb-2 text-gray-900 dark:text-gray-200">Lessons</h4>`;
+            results.lessons.forEach((lesson) => {
+              html += `
+                <div class="py-1">
+                  <a href="/lessons/${lesson.id}/" class="text-blue-500 hover:underline">
+                    ${lesson.title}
+                  </a>
+                </div>`;
+            });
+          }
+  
+          if (results.courses.length) {
+            html += `
+              <h4 class="font-bold text-lg mt-4 mb-2 text-gray-900 dark:text-gray-200">Courses</h4>`;
+            results.courses.forEach((course) => {
+              html += `
+                <div class="py-1">
+                  <a href="/courses/${course.id}/" class="text-blue-500 hover:underline">
+                    ${course.title}
+                  </a>
+                </div>`;
+            });
+          }
+  
+          if (!html) {
+            html = `
+              <p class="text-gray-500 dark:text-gray-400">No results found.</p>`;
+          }
+  
+          resultsContainer.innerHTML = html;
+          resultsContainer.classList.remove("hidden");
+        } catch (error) {
+          console.error("Error fetching search results:", error);
+          resultsContainer.innerHTML = `
+            <p class="text-red-500">An error occurred while searching.</p>`;
+        }
+      });
+    });
+  </script>
+  

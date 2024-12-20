@@ -1,0 +1,43 @@
+<section class="w-full mx-auto">
+    <!-- Banner Section -->
+    <div class="text-center p-6 bg-white border border-gray-200 shadow-md sm:p-8 dark:bg-gray-800 dark:border-gray-700">
+        <h5 class="mb-4 text-3xl font-extrabold text-gray-900 dark:text-white">
+            Start your Django Web Development Journey with Nazbeen AI
+        </h5>
+        <p class="mb-6 text-lg text-gray-600 dark:text-gray-400">
+            Experience the future of web services.
+        </p>
+    </div>
+
+    <!-- Categories Section -->
+    <div class="flex items-center justify-start overflow-x-auto bg-gray-100 dark:bg-gray-700 py-4 px-6 gap-4 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200 dark:scrollbar-thumb-gray-600 dark:scrollbar-track-gray-800">
+        <!-- All Categories Link -->
+        <a href="{% url 'home' %}"
+            class="flex-shrink-0 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-full shadow-sm hover:bg-gray-200 dark:text-gray-300 dark:bg-gray-800 dark:border-gray-600 dark:hover:bg-gray-600">
+            All
+        </a>
+
+        <!-- Dynamic Categories -->
+        {% for category in categories %}
+        <a href="{% url 'categories' category.public_id %}"
+            class="flex-shrink-0 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-full shadow-sm hover:bg-gray-200 dark:text-gray-300 dark:bg-gray-800 dark:border-gray-600 dark:hover:bg-gray-600 whitespace-nowrap">
+            {{ category.title }}
+        </a>
+        {% endfor %}
+    </div>
+</section>
+
+<style>
+  /* Custom Scrollbar */
+  .scrollbar-thin::-webkit-scrollbar {
+      height: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+      border-radius: 10px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+      border-radius: 10px;
+  }
+</style>

@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}
+  Profile - {{ user.user.username }}
+{% endblock title %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto my-10 p-8 bg-white shadow-md rounded-lg border border-gray-200">
+  <!-- Profile Header -->
+  <div class="flex items-center mb-6">
+    {% if user.profile_picture %}
+      <img src="{{ user.profile_picture.url }}" alt="Profile Picture of {{ user.user.username }}" class="w-20 h-20 rounded-full shadow-lg">
+    {% else %}
+      <img src="{% static 'img/no_image.png' %}" alt="Default Profile Picture" class="w-20 h-20 rounded-full shadow-lg">
+    {% endif %}
+    <div class="ml-6">
+      <h2 class="text-3xl font-semibold text-gray-900">{{ user.user.username }}</h2>
+      <p class="text-sm text-gray-500">{{ user.user.email }}</p>
+    </div>
+  </div>
+
+  <!-- Profile Form -->
+  <div>
+    <h3 class="text-xl font-semibold text-gray-800 mb-4">Edit Profile</h3>
+    <form method="POST" enctype="multipart/form-data" class="space-y-6">
+      {% csrf_token %}
+
+      <!-- Username (Read-Only) -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Username</label>
+        <input type="text" value="{{ user.user.username }}" class="mt-2 w-full rounded-lg border-gray-300 bg-gray-100 p-3 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none" readonly>
+      </div>
+
+      <!-- Full Name -->
+      <div>
+        <label for="full_name" class="block text-sm font-medium text-gray-700">Full Name</label>
+        <input type="text" id="full_name" name="full_name" value="{{ form.full_name.value }}" class="mt-2 w-full rounded-lg border-gray-300 bg-white p-3 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+      </div>
+
+      <!-- Bio -->
+      <div>
+        <label for="bio" class="block text-sm font-medium text-gray-700">Bio</label>
+        <textarea id="bio" name="bio" rows="4" class="mt-2 w-full rounded-lg border-gray-300 bg-white p-3 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">{{ form.bio.value }}</textarea>
+      </div>
+
+      <!-- Profile Picture -->
+      <div>
+        <label for="profile_picture" class="block text-sm font-medium text-gray-700">Profile Picture</label>
+        <input type="file" id="profile_picture" name="profile_picture" class="mt-2 w-full text-sm border border-gray-300 rounded-lg p-2 bg-gray-50 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <p class="mt-2 text-sm text-gray-500">Upload a new profile picture. Recommended size: 150x150px.</p>
+      </div>
+
+      <!-- Course Enrollments -->
+      <div class="mt-8 p-6 bg-gray-50 rounded-lg border border-gray-200">
+        <h4 class="text-lg font-medium text-gray-800 mb-4">Course Enrollments</h4>
+        {% if request.user.students %}
+          <ul class="space-y-3">
+            {% for enrollment in request.user.students.enrollments.all %}
+              <li class="flex items-center justify-between bg-white p-4 rounded-lg shadow-sm border">
+                <div>
+                  <p class="text-sm font-medium text-gray-800">{{ enrollment.course.title }}</p>
+                  <p class="text-xs text-gray-500">Instructor: {{ enrollment.course.instructor.user.username }}</p>
+                </div>
+                <p class="text-xs text-gray-500">Enrolled: {{ enrollment.enrolled_at|timesince }} ago</p>
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p class="text-sm text-gray-500">You are not enrolled in any courses.</p>
+        {% endif %}
+      </div>
+
+      <!-- Save Changes Button -->
+      <div>
+        <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg shadow-sm hover:bg-blue-700 transition-all focus:ring-2 focus:ring-blue-500 focus:outline-none">
+          Save Changes
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock content %}

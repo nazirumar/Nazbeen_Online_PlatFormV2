@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+    {{ course_modules_lessons_video.0.title }} - Watch
+{% endblock title %}
+
+{% block content %}
+    {% include "banner/banner.html" %}
+
+    <div class="container mx-auto p-5">
+        {% if course_modules_lessons_video %}
+            {% with course=course_modules_lessons_video.0 modules=course_modules_lessons_video.1 lessons=course_modules_lessons_video.2 videos=course_modules_lessons_video.3 %}
+
+            <div class="flex flex-col lg:flex-row gap-8">
+                <!-- Video Frame -->
+                <div class="lg:w-2/3 w-full p-4 rounded-lg shadow-lg bg-white dark:bg-gray-800">
+                    <h2 class="text-2xl font-semibold text-center mb-4 text-gray-800 dark:text-white">{{ course.title }} - Modules</h2>
+                    <div class="video-container mb-6">
+                        {{ video_embed_html|safe }}
+                    </div>
+
+                    <!-- Interactive Tabs -->
+                    <div class="mb-4 border-b border-gray-200 dark:border-gray-700">
+                        <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="default-tab" data-tabs-toggle="#default-tab-content" role="tablist">
+                            <li class="me-2" role="presentation">
+                                <button class="inline-block p-4 border-b-2 rounded-t-lg hover:text-blue-600 focus:outline-none" id="profile-tab" data-tabs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">Profile</button>
+                            </li>
+                            <li class="me-2" role="presentation">
+                                <button class="inline-block p-4 border-b-2 rounded-t-lg hover:text-blue-600 focus:outline-none" id="dashboard-tab" data-tabs-target="#dashboard" type="button" role="tab" aria-controls="dashboard" aria-selected="false">Dashboard</button>
+                            </li>
+                            <li class="me-2" role="presentation">
+                                <button class="inline-block p-4 border-b-2 rounded-t-lg hover:text-blue-600 focus:outline-none" id="transcripts-tab" data-tabs-target="#transcripts" type="button" role="tab" aria-controls="transcripts" aria-selected="false">Transcripts</button>
+                            </li>
+                            <li role="presentation">
+                                <button class="inline-block p-4 border-b-2 rounded-t-lg hover:text-blue-600 focus:outline-none" id="contacts-tab" data-tabs-target="#contacts" type="button" role="tab" aria-controls="contacts" aria-selected="false">Contacts</button>
+                            </li>
+                        </ul>
+                    </div>
+                    <div id="default-tab-content">
+                        <div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                            <p class="text-sm text-gray-500 dark:text-gray-400">This is some placeholder content for the <strong class="font-medium text-gray-800 dark:text-white">Profile tab's associated content</strong>.</p>
+                        </div>
+                        <div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="dashboard" role="tabpanel" aria-labelledby="dashboard-tab">
+                            <p class="text-sm text-gray-500 dark:text-gray-400">This is some placeholder content for the <strong class="font-medium text-gray-800 dark:text-white">Dashboard tab's associated content</strong>.</p>
+                        </div>
+                        <div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="transcripts" role="tabpanel" aria-labelledby="transcripts-tab">
+                            <div class="border border-gray-300 rounded-lg p-4 bg-gray-50 h-60 overflow-y-auto">
+                                <p id="transcript" class="text-gray-700"></p>
+                            </div>
+                        </div>
+                        <div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="contacts" role="tabpanel" aria-labelledby="contacts-tab">
+                            <p class="text-sm text-gray-500 dark:text-gray-400">This is some placeholder content for the <strong class="font-medium text-gray-800 dark:text-white">Contacts tab's associated content</strong>.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modules and Lessons -->
+                <div class="lg:w-1/4 w-full p-4">
+                    <ul class="space-y-6">
+                        {% for module in modules %}
+                            <li class="bg-white p-4 rounded-lg shadow-md hover:shadow-xl transition duration-300">
+                                <div class="flex justify-between items-center">
+                                    <button class="text-blue-700 hover:underline focus:outline-none" onclick="toggleLessons('lessons-{{ module.id }}')">
+                                        <h3 class="text-lg font-bold">{{ module.title }}</h3>
+                                    </button>
+                                </div>
+                                <ul id="lessons-{{ module.id }}" class="hidden p-3 space-y-3">
+                                    {% for lesson in lessons %}
+                                        {% if lesson.module == module %}
+                                            <li>
+                                                {% if lesson.videos.exists %}
+                                                    {% for video in lesson.videos.all %}
+                                                        <div class="flex p-2 rounded-lg hover:bg-gray-100 transition duration-200 cursor-pointer">
+                                                            <input id="radio-video-{{ video.id }}" name="video-radio" type="radio" value="{{ video.video.url }}" class="mr-2" onchange="playVideo(this)">
+                                                            <label for="radio-video-{{ video.id }}" class="cursor-pointer">
+                                                                <strong>{{ video.title }}</strong>
+                                                                <p class="text-xs text-gray-500">Some helpful instruction here.</p>
+                                                            </label>
+                                                        </div>
+                                                    {% endfor %}
+                                                {% else %}
+                                                    <p>No videos available for this lesson.</p>
+                                                {% endif %}
+                                            </li>
+                                        {% endif %}
+                                    {% endfor %}
+                                </ul>
+                            </li>
+                        {% empty %}
+                            <li>No modules available.</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+            {% endwith %}
+        {% else %}
+            <p>No modules or lessons found.</p>
+        {% endif %}
+    </div>
+
+{% endblock content %}

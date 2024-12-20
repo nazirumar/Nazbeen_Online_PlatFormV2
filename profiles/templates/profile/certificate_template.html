@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certificate of Completion</title>
+    <link rel="stylesheet" href="../../../staticfiles/vendors/flowbite.min.css">
+
+    <style>
+        /* Ensure full-page layout */
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+
+        .certificate-container {
+            background: url('https://www.toptal.com/designers/subtlepatterns/patterns/dots.png');
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        .certificate-content {
+            border-radius: 15px;
+            background-color: #ffffff;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+            border: 1px solid #e5e7eb;
+            width: 85%;
+            max-width: 900px;
+            text-align: center;
+        }
+
+        .certificate-header h1 {
+            font-family: 'Poppins', sans-serif;
+            color: #333333;
+        }
+
+        .certificate-header p {
+            font-family: 'Open Sans', sans-serif;
+            color: #555555;
+        }
+
+        .certificate-footer p {
+            font-family: 'Roboto', sans-serif;
+            color: #888888;
+        }
+
+        .line-divider {
+            border-top: 2px solid #e5e7eb;
+            margin-top: 30px;
+        }
+
+        .certificate-content h2, .certificate-content h3 {
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .certificate-footer p:last-child {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="certificate-container">
+        <div class="certificate-content px-6 sm:px-10 lg:px-16 py-8">
+            <!-- Certificate Header -->
+            <div class="text-center mb-12 certificate-header">
+                <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-gray-800 mb-4">Certificate of Completion</h1>
+                <p class="text-lg sm:text-xl text-gray-600 mb-6">This certifies that</p>
+            </div>
+
+            <!-- Student Name -->
+            <div class="text-center mb-4">
+                <h2 class="text-3xl sm:text-4xl md:text-5xl font-semibold text-gray-800">{{ student.user.username }}</h2>
+                <p class="text-lg sm:text-xl text-gray-600 mt-2">has successfully completed the</p>
+            </div>
+
+            <!-- Course Title -->
+            <div class="text-center mt-4">
+                <h3 class="text-2xl sm:text-3xl md:text-4xl font-semibold text-gray-800">{{ course.title }}</h3>
+            </div>
+
+            <!-- Date Awarded -->
+            <div class="text-center mt-8">
+                <p class="text-lg sm:text-xl text-gray-600">
+                    Awarded on: <span class="font-semibold">{{ certificate.date_awarded|date:"F d, Y" }}</span>
+                </p>
+            </div>
+
+            <!-- Authorized By -->
+            <div class="mt-12 text-center certificate-footer">
+                <p class="text-sm sm:text-base text-gray-500">Authorized by</p>
+                <p class="text-lg sm:text-xl font-semibold text-gray-800">{{ organization.title }}</p>
+            </div>
+
+            <!-- Decorative Line -->
+            <div class="line-divider"></div>
+        </div>
+    </div>
+</body>
+</html>

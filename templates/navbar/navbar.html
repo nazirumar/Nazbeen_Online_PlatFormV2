@@ -1,0 +1,102 @@
+{% load static %}
+<nav class="bg-white border-b border-gray-200 dark:bg-gray-900 z-50">
+  <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
+    <!-- Logo Section -->
+    <a href="{% url 'home' %}" class="flex items-center space-x-3 rtl:space-x-reverse">
+      <img src="{% static 'img/custom_logo.png' %}" class="h-8" alt="Nazbeen AI Logo" />
+    </a>
+    
+    <!-- Right Section -->
+    <div class="flex md:order-2 items-center space-x-3">
+      <!-- Search Button (Mobile) -->
+      <button type="button" data-collapse-toggle="navbar-search" aria-controls="navbar-search" aria-expanded="false" class="md:hidden text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5 me-1">
+        <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+        </svg>
+        <span class="sr-only">Search</span>
+      </button>
+
+      <!-- Search (Desktop) -->
+      <div class="relative hidden md:block">
+        {% include "navbar/search.html" %}
+      </div>
+
+      <!-- Notifications -->
+      <div class="relative">
+        <button type="button" data-popover-target="popover-notifications" class="p-2 rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none">
+          <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5.365V3m0 2.365a5.338 5.338 0 0 1 5.133 5.368v1.8c0 2.386 1.867 2.982 1.867 4.175 0 .593 0 1.292-.538 1.292H5.538C5 18 5 17.301 5 16.708c0-1.193 1.867-1.789 1.867-4.175v-1.8A5.338 5.338 0 0 1 12 5.365ZM8.733 18c.094.852.306 1.54.944 2.112a3.48 3.48 0 0 0 4.646 0c.638-.572 1.236-1.26 1.33-2.112h-6.92Z"/>
+          </svg>
+          <span class="absolute top-2 right-0 inline-flex items-center justify-center w-4 h-4 text-xs font-bold text-white bg-red-600 border-2 border-white rounded-full">
+            {{ student_notifications|length }}
+          </span>
+        </button>
+
+        <!-- Notification Popover -->
+        <div id="popover-notifications" role="tooltip" class="absolute z-30 hidden w-64 bg-white dark:bg-gray-800 rounded-lg shadow-md">
+          <div class="p-4 border-b border-gray-200 dark:border-gray-600">
+            <h3 class="text-sm font-semibold text-gray-800 dark:text-gray-200">Notifications</h3>
+          </div>
+          <div class="p-4 space-y-2">
+            {% if student_notifications %}
+              {% for notification in student_notifications %}
+                <a href="{% url 'student_notification' notification.public_id %}" class="block text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md p-2">
+                  <strong>{{ notification.action }}</strong>: {{ notification.course }}
+                </a>
+              {% endfor %}
+            {% else %}
+              <p class="text-sm text-gray-500 dark:text-gray-400">No notifications available.</p>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <!-- User Dropdown -->
+      <div class="relative">
+        <button id="user-menu" data-dropdown-toggle="dropdown" class="flex items-center focus:outline-none">
+          <svg class="w-10 h-10 text-gray-800 dark:text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 21a9 9 0 100-18 9 9 0 000 18zm0 0a8.949 8.949 0 004.951-1.488A3.987 3.987 0 0013 16h-2a3.987 3.987 0 00-3.951 3.512A8.948 8.948 0 0012 21zm3-11a3 3 0 11-6 0 3 3 0 016 0z"/>
+          </svg>
+        </button>
+        <div id="dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-md">
+          <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
+            <li>
+              {% if request.user.is_authenticated %}
+                <span class="block px-4 py-2 font-bold">{{ request.user.username|title }}</span>
+              {% endif %}
+            </li>
+            <hr>
+            {% if request.user.is_authenticated %}
+              <li>
+                <a href="{% url 'profile' request.user.username %}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">Account</a>
+              </li>
+              {% if  request.user.instructors %}
+              <li>
+                <a href="{% url 'instructor_dashboard' request.user.public_id %}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">Instructor</a>
+
+              </li>
+              {% endif %}
+              <li>
+                <form action="{% url 'logout' %}" method="post">
+                  {% csrf_token %}
+                  <button type="submit" class="block px-4 py-2 text-left w-full hover:bg-gray-100 dark:hover:bg-gray-700">Logout</button>
+                </form>
+              </li>
+            {% else %}
+              <li>
+                <a href="{% url 'login' %}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">Login</a>
+              </li>
+            {% endif %}
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Search (Mobile) -->
+    <div id="navbar-search" class="hidden w-full md:hidden">
+      <div class="relative mt-4">
+        <input type="text" class="block w-full p-2 ps-10 text-sm rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600" placeholder="Search..." />
+      </div>
+    </div>
+  </div>
+</nav>

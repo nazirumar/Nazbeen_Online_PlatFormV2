@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}
+  Home Page
+{% endblock title %}
+
+{% block content %}
+{% include "banner/banner.html" %}
+
+<div class="flex-grow p-6 mt-4 mb-5">
+  <div class="grid lg:grid-cols-4 sm:grid-cols-2 gap-6 mt-4">
+    {% for subject, subject_courses in courses.items %}
+      {% for course in subject_courses %}
+        <a href="{% url 'course_detail' course.public_id %}" 
+           class="group bg-white border border-gray-200 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 overflow-hidden">
+          
+          <!-- Image Section -->
+          <img class="w-full h-56 object-cover transition-transform duration-500 group-hover:scale-110" 
+               src="{{ course.image.url }}" 
+               alt="{{ course.title }}">
+          
+          <!-- Content Section -->
+          <div class="flex flex-col justify-between p-6">
+            <h6 class="text-2xl font-semibold text-gray-900 group-hover:text-blue-500 transition-colors duration-300 mb-2">{{ course.title }}</h6>
+            <h2 class="text-xl text-gray-700 group-hover:text-gray-500 mb-2">{{ course.slug.title }}</h2>
+            <p class="text-sm text-gray-600 group-hover:text-gray-500 line-clamp-3">{{ course.subject.description|truncatechars:200 }}</p>
+            <span class="text-gray-500 text-sm mt-2">Author: {{ course.subject.author }}</span>
+          </div>
+          
+        </a>
+      {% endfor %}
+    {% endfor %}
+  </div>
+</div>
+
+{% endblock content %}

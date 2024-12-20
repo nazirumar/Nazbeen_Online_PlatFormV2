@@ -1,0 +1,102 @@
+<!-- chatbot/chat.html -->
+
+<!-- Chatbot Button (Fixed at bottom-right corner) -->
+<div class="fixed bottom-5 z-40 right-5" id="chatbotBtnContainer">
+    <button id="chatbotBtn" class="bg-blue-500 text-white p-4 rounded-full shadow-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 transition duration-300 flex items-center justify-center space-x-2">
+        <!-- Chatbot Icon (Speech Bubble or Robot) -->
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2C8.13 2 5 4.87 5 8c0 2.75 1.73 5.1 4.25 6.1A4.97 4.97 0 0110 18h4a4.97 4.97 0 011.75-3.9C17.27 13.1 19 10.75 19 8c0-3.13-3.13-6-7-6zm0 12H9v2h3v3l4-4-4-4v3z"/>
+        </svg>
+        <span class="text-lg">Chat</span>
+    </button>
+</div>
+
+<!-- Chatbot Window -->
+<div id="chatbotWindow" class="fixed bottom-3 z-40 right-5 hidden w-96 h-[500px] bg-white shadow-lg rounded-lg border border-gray-300">
+    <div class="flex justify-between items-center bg-blue-500 text-white p-3 rounded-t-lg">
+        <h3 class="text-lg font-semibold">Chat with us</h3>
+        <button id="closeChat" class="text-white hover:text-gray-300">&times;</button>
+    </div>
+    <div class="p-4 overflow-y-auto h-[calc(100%-72px)]">
+        <div id="chatContent" class="space-y-4">
+            <!-- Example message -->
+            <div class="text-sm bg-gray-100 p-2 rounded-lg">
+                <p>Hello! How can I assist you today?</p>
+            </div>
+        </div>
+    </div>
+    <div class="p-4 border-t bg-gray-100 rounded-b-lg">
+        <div class="flex items-center space-x-2">
+            <!-- Chat Input Field (ChatGPT-style) -->
+            <input type="text" id="chatInput" placeholder="Type a message..." class="flex-grow p-3 text-lg bg-gray-200 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            
+            <!-- Send Button (ChatGPT-style) -->
+            <button id="sendMessage" class="bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 transition duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript -->
+<script>
+    const chatbotBtn = document.getElementById('chatbotBtn');
+    const chatbotWindow = document.getElementById('chatbotWindow');
+    const closeChat = document.getElementById('closeChat');
+    const chatInput = document.getElementById('chatInput');
+    const sendMessage = document.getElementById('sendMessage');
+    const chatContent = document.getElementById('chatContent');
+    const chatbotBtnContainer = document.getElementById('chatbotBtnContainer');
+
+    // Toggle chatbot window visibility
+    chatbotBtn.addEventListener('click', () => {
+        chatbotWindow.classList.toggle('hidden');
+    });
+
+    // Close chatbot window
+    closeChat.addEventListener('click', () => {
+        chatbotWindow.classList.add('hidden');
+    });
+
+    // Send message
+    sendMessage.addEventListener('click', () => {
+        const message = chatInput.value.trim();
+        if (message) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('text-sm', 'bg-blue-100', 'p-2', 'rounded-lg', 'self-end');
+            messageDiv.innerHTML = `<p>${message}</p>`;
+            chatContent.appendChild(messageDiv);
+            chatInput.value = '';
+            chatContent.scrollTop = chatContent.scrollHeight;
+        }
+    });
+
+    // Send message on Enter key press
+    chatInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            sendMessage.click();
+        }
+    });
+
+    // Function to hide chatbot button when near the bottom
+    function hideChatbotBtnOnScroll() {
+        const windowHeight = window.innerHeight;
+        const docHeight = document.documentElement.scrollHeight;
+        const scrollPosition = window.scrollY;
+
+        // If the button is near the bottom, hide it
+        if (docHeight - scrollPosition - windowHeight < 100) {
+            chatbotBtnContainer.classList.add('hidden');
+        } else {
+            chatbotBtnContainer.classList.remove('hidden');
+        }
+    }
+
+    // Listen for scroll event to adjust chatbot button visibility
+    window.addEventListener('scroll', hideChatbotBtnOnScroll);
+
+    // Initial check for button visibility on page load
+    hideChatbotBtnOnScroll();
+</script>
