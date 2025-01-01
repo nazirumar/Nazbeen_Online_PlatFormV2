@@ -91,6 +91,7 @@ INSTALLED_APPS = [
     "profiles",
     "instructors",
     'payment',
+    'chatbot',
 ]
 
 MIDDLEWARE = [

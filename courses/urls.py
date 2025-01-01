@@ -21,7 +21,5 @@ urlpatterns = [
     
     path('get-content/<int:course_id>/', views.get_content, name='get_content'),
 
-    path('chat/', views.chat_with_bot, name='chat_with_bot'),
-
 
 ]

@@ -1,6 +1,4 @@
-from django.forms import modelformset_factory
 from django.http import HttpResponse, JsonResponse
-from django.urls import reverse_lazy
 from django.conf import settings
 from django.db.models import Q
 from courses.models import Category, Course,  Module
@@ -9,8 +7,9 @@ from django.http import Http404
 import helpers
 from django.contrib import messages
 
-from helpers.utils import query_courses
-from .models import Category, Lesson, LessonVideo, Likes, Notification, PublishStatus, Student, Subject, Course, Module, Enrollment
+import helpers.utils
+
+from .models import Category, Lesson, Likes, PublishStatus, Student, Subject, Course, Module, Enrollment
 from django.contrib.auth.decorators import login_required
 from courses import services 
 
@@ -171,22 +170,4 @@ def module_courses(request, module_id):
 # Enroll a student in a course
 
 
-def chat_with_bot(request):
-    question = request.GET.get("question")
-    if not question:
-        return JsonResponse({"error": "Please provide a question."}, status=400)
-    
-    try:
-        results = query_courses(question)
-        # Ensure results are processed correctly
-        data = [
-            {
-                "title": res.metadata.get("title", "No Title"),
-                "description": res.metadata.get("description", "No Description"),
-            }
-            for res in results
-        ]
-        print(data)
-        return JsonResponse({"response": data})
-    except Exception as e:
-        return JsonResponse({"error": str(e)}, status=500)
+

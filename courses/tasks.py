@@ -1,39 +1,39 @@
-# from courses.models import LessonVideo
-# # from helpers.embeddings import generate_transcript
 # from celery import shared_task
-# import moviepy as mp
-# import speech_recognition as sr
+# from courses.models import Course
+# from helpers.embeddings import generate_query_embedding, pineconeindex
+
 
 # @shared_task
-# def generate_transcript_task(video_id):
+# def create_course_embedding_task(course_id):
 #     """
-#     Task to generate a transcript using T5 summarization.
+#     Celery task to generate and store embedding for a Course.
 #     """
 #     try:
-#         # Get the video instance
-#         video = LessonVideo.objects.get(id=video_id)
+#         # Get the course instance
+#         course = Course.objects.get(id=course_id)
+#         description = course.description
+#         title = course.title
+#         price = course.price
+#         likes = course.likes
+#         instructor_name = course.instructor.user if course.instructor else "Unknown"
 
-#         # Extract audio from video
-#         video_path = video.video.url
-#         audio_path = video_path.replace('.mp4', '.wav')
+#         # Generate embedding for the course description
+#         course_embedding = generate_query_embedding(description)
 
-#         # Extract audio using moviepy
-#         clip = mp.VideoFileClip(video_path)
-#         clip.audio.write_audiofile(audio_path)
+#         # Prepare metadata with new fields
+#         metadata = {
+#             "title": title,
+#             "description": description,
+#             "price": price,
+#             "likes": likes,
+#             "instructor": instructor_name
+#         }
 
-#         # Convert audio to text using SpeechRecognition
-#         recognizer = sr.Recognizer()
-#         with sr.AudioFile(audio_path) as source:
-#             audio = recognizer.record(source)
-#             raw_text = recognizer.recognize_google_cloud(audio)  # Convert audio to text
+#         # Store the embedding and metadata in Pinecone
+#         index = pineconeindex()
+#         index.upsert([(str(course.id), course_embedding, metadata)])
 
-#         # Generate the summarized transcript using T5
-#         summarized_transcript = generate_transcript(raw_text)
-#         print(summarized_transcript)
-#         # Save the transcript in the database
-#         video.transcript = summarized_transcript
-#         video.save()
-
+#         print(f"Embedding for course '{course.title}' created and stored successfully.")
+    
 #     except Exception as e:
-#         print(f"Error in generate_transcript_task: {e}")
-#         raise
+#         print(f"Error creating embedding for course ID {course_id}: {e}")

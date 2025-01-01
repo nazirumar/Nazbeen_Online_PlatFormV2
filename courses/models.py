@@ -97,13 +97,16 @@ class Course(BaseContent):
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     likes = models.IntegerField(default=0)
     liked_by = models.ManyToManyField("accounts.customUser", through="Likes", related_name="liked_courses", blank=True)
-    embedding = VectorField(dimensions=384, null=True, blank=True)
+    pinecone_id = models.CharField(max_length=255, null=True, blank=True)  # Reference Pinecone vector ID
+
+
     total_ratings = models.PositiveIntegerField(default=0)
     updated_at = models.DateTimeField(auto_now=True)
 
 
     class Meta:
         ordering = ["-created_at"]
+
 
     def __str__(self):
         return self.title

@@ -1,19 +1,36 @@
-from transformers import AutoTokenizer, AutoModel
-import torch
-from courses.models import Course
+# from sentence_transformers import SentenceTransformer
 
-def generate_embedding(text):
-    tokenizer = AutoTokenizer.from_pretrained("sentence-transformers/all-MiniLM-L12-v2")
-    model = AutoModel.from_pretrained("sentence-transformers/all-MiniLM-L12-v2")
-    inputs = tokenizer(text, return_tensors="pt", truncation=True, max_length=512)
-    with torch.no_grad():
-        embeddings = model(**inputs).last_hidden_state.mean(dim=1).squeeze().numpy()
-    return embeddings
+# from pinecone import Pinecone as PineconeClient
+# from decouple import config
 
-def store_embeddings():
-    courses = Course.objects.all()
-    for course in courses:
-        text = f"{course.title} {course.description}"
-        embedding = generate_embedding(text)
-        course.embedding = embedding
-        course.save()
+# # # Initialize Pinecone client
+# pinecone_client = PineconeClient(api_key=config('PINECONE_API_KEY'))
+
+# # Pinecone index name
+# INDEX_NAME = "course-index"
+
+# def pineconeindex():
+#     try:
+#         # Connect to Pinecone index
+#         pinecone_index = pinecone_client.Index(INDEX_NAME)
+#     except Exception as e:
+#         raise RuntimeError(f"Failed to connect to Pinecone index '{INDEX_NAME}': {e}")
+#     return pinecone_index
+
+# embedding_model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
+
+
+# def generate_query_embedding(query):
+#     """
+#     Generate embeddings for the query using a pre-trained SentenceTransformer model.
+#     """
+#     return embedding_model.encode(query).tolist()
+
+# def query_pinecone(query_embedding):
+#     """
+#     Query Pinecone for the most similar items based on the generated query embedding.
+#     """
+#     index = pineconeindex()
+#     results = index.query(vector=query_embedding, top_k=5, include_metadata=True)
+
+#     return results

@@ -42,7 +42,7 @@
       <div class="flex items-center space-x-6">
          <!-- Profile Section -->
          <div class="relative">
-            <a href="{% url 'instructor_profile' request.user %}">
+            <a href="{% url 'instructor_profile' request.user.public_id %}">
                {% if instructor.profile_picture %}
                   <img class="w-10 h-10 rounded-full" src="{{ instructor.profile_picture.url }}" alt="Instructor's Profile">
                {% else %}
