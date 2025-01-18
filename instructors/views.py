@@ -1,5 +1,5 @@
 import json
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views.generic.edit import CreateView
@@ -8,13 +8,41 @@ from django.views import generic
 from courses.models import Course, Lesson, LessonVideo, Module, Notification, Student
 from instructors.mixin import OwnerCourseMixin
 from django.views.generic.edit import FormView
-
+from django.utils.timezone import now, timedelta
 from instructors.models import Certificate, Instructor
 
 from .forms import CategoryForm, InstructorProfileForm, ModuleFormSet,LessonVideoFormSet, SubjectForm, CourseForm, ModuleForm, LessonForm, LessonVideoForm
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 
+from django.contrib.contenttypes.models import ContentType
+from django.db.models import Q
 
+
+
+
+def generic_search_view(request):
+    model_name = request.GET.get('model')
+    search_query = request.GET.get('query', '')
+    fields = request.GET.getlist('fields')
+    print(model_name, search_query, fields)
+    response_data = {}
+
+    if model_name and search_query and fields:
+        try:
+            model = ContentType.objects.get(model=model_name).model_class()
+            print(model)
+            query = Q()
+            for field in fields:
+                query |= Q(**{f"{field}__icontains": search_query})
+
+            results = model.objects.filter(query)
+            response_data['results'] = [str(result) for result in results]
+        except ContentType.DoesNotExist:
+            response_data['error'] = f"Model '{model_name}' does not exist."
+    else:
+        response_data['error'] = "Invalid parameters. Please provide 'model', 'query', and 'fields'."
+
+    return JsonResponse(response_data)
 
 
 def no_access_view(request):
@@ -29,7 +57,7 @@ def no_access_view(request):
 
 
 class OwnerCourseEditMixin(OwnerCourseMixin, OwnerEditMixin):
-    template_name = 'instructor/courses/manage/course/create_courses_form.html'
+    template_name = 'instructor/courses/course/create_courses_form.html'
 
 
 
@@ -44,7 +72,24 @@ class InstructorDashboardView(InstructorRequiredMixin, generic.TemplateView):
         # Retrieve courses owned by the instructor
         user_courses = Course.objects.filter(owner=self.request.user)
         # Add relevant data to the context
-        context['courses'] = user_courses
+        selected_filter =self.request.GET.get('filter', 'last_30_days')
+        today = now()
+        if selected_filter == 'last_day':
+            start_date = today - timedelta(days=1)
+        elif selected_filter == 'last_7_days':
+            start_date = today - timedelta(days=7)
+        elif selected_filter == 'last_30_days':
+            start_date = today - timedelta(days=30)
+        else:
+            start_date = None  # Show all if no filter matches
+        context = super().get_context_data(**kwargs)
+        if start_date:
+            context['filtered_data'] = Course.objects.filter(owner=self.request.user, created_at__gte=start_date).order_by('-created_at')
+        else:
+        # Filter courses by the owner (instructor) and order by creation date
+            context["filtered_data"] = Course.objects.filter(owner=self.request.user).order_by('-created_at')
+        context['selected_filter'] = selected_filter
+    
         context['total_courses'] = user_courses.count()
         # Count total students enrolled in the instructor's courses
         context['total_students'] = Student.objects.filter(
@@ -87,7 +132,7 @@ class SubjectCreateView(FormView):
 
 class ManageCourseListView(InstructorRequiredMixin, generic.CreateView):
     model = Course
-    template_name = 'instructor/courses/manage/course/list.html'
+    template_name = 'instructor/courses/course/list.html'
     fields = ['title', 'subject', 'description', 'access', 'status', 'image', 'price']  # Specify fields explicitly
     success_url = reverse_lazy('instructor_course_list')  # Handle redirect after successful form submission
     
@@ -188,7 +233,7 @@ class LessonCreateView(CreateView):
 class CourseUpdateView(generic.UpdateView):
     model = Course
     # permission_required = 'courses.change_course'
-    template_name = 'instructor/courses/manage/course/update_form.html'
+    template_name = 'instructor/courses/course/update_form.html'
     fields = ['title','subject', 'description', 'access', 'status','image','price']
     slug_url_kwarg = 'public_id'  #
     slug_field = 'public_id'
@@ -203,6 +248,14 @@ class CourseUpdateView(generic.UpdateView):
 class CourseDeleteView(OwnerCourseMixin, generic.DeleteView):
     template_name = 'courses/manage/course/delete.html'
     permission_required = 'courses.delete_course'
+    slug_url_kwarg = 'public_id'
+
+    def delete(self, request, public_id):
+        if request.method == "DELETE":
+            course = get_object_or_404(Course, public_id=public_id)
+            course.delete()
+            return HttpResponse(status=204)  # Return no content for HTMX to remove the element.
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
 
 
 class ModuleUpdateView(LoginRequiredMixin, PermissionRequiredMixin, generic.UpdateView):
@@ -217,27 +270,27 @@ class ModuleUpdateView(LoginRequiredMixin, PermissionRequiredMixin, generic.Upda
 
 
 
+
 class ModuleListView(InstructorRequiredMixin, generic.CreateView):
     template_name = 'instructor/modules/list.html'
     model = Module
     fields = ['title', 'course']
-
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["modules"] = self.get_queryset().filter(course__owner=self.request.user).order_by('-created_at')
         return context
     
-
-    def post(self, request):
+    def post(self, request, *args, **kwargs):
         if request.method == 'POST':
             form = ModuleForm(request.POST)
             if form.is_valid():
-        
                 form.save()
-                return redirect('instructor_module_list')
-        
+                return redirect('instructor_modules_list')
+
+        # If not HTMX or form is not valid, return the standard response
         return render(request, self.template_name, {'form': form})
+
 
 
 
@@ -395,22 +448,22 @@ def notifications_view(request):
 
 def instructorProfile(request, public_id):
     # Retrieve the user or return a 404 if not found
-    user = get_object_or_404(Instructor, user__public_id=public_id)
-    print(user)
+    instructor  = get_object_or_404(Instructor, user__public_id=public_id)
+
     # Process form data on POST request
     if request.method == 'POST':
-        form = InstructorProfileForm(request.POST, request.FILES, instance=user)
+        form = InstructorProfileForm(request.POST, request.FILES, instance=instructor)
         if form.is_valid():
             form_instance = form.save(commit=False)
-            form_instance.user = request.user
+            form_instance.user = instructor.user
             form_instance.save()  # Save the form with the user instance
-            return redirect('profile', username=request.user.username)  # Redirect after successful form submission
+            
+            return redirect('instructor_profile', public_id=request.user.public_id)  # Redirect after successful form submission
     else:
-        form = InstructorProfileForm(instance=user)  # Pre-fill the form with the user's data
-
+        form = InstructorProfileForm(instance=instructor)  # Pre-fill the form with the user's data
     # Context to be passed to the template
     context = {
-        'user': user,
+        'user': instructor,
         'form': form,  # Include the form in the context
     }
 

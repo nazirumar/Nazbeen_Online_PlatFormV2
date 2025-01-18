@@ -1,0 +1,31 @@
+<dialog id="{{ modal_id }}" class="modal {{ modal_classes }}">
+    <div class="modal-box {{ modal_box_classes }}">
+      <!-- Close Button -->
+      <button 
+        class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" 
+        onclick="document.getElementById('{{ modal_id }}').close();">
+        ✕
+      </button>
+      
+      <!-- Modal Title -->
+      <h3 class="text-lg font-bold {{ modal_title_classes }}">
+        {{ modal_title }}
+      </h3>
+  
+      <!-- Modal Body -->
+      <div class="modal-body {{ modal_body_classes }}">
+        {% block modal_body %}
+        <!-- Default modal body content -->
+        {% endblock %}
+      </div>
+  
+      <!-- Modal Footer -->
+      <div class="modal-action {{ modal_footer_classes }}">
+        {% block modal_footer %}
+        <!-- Default modal footer -->
+        <button class="btn btn-primary" onclick="document.getElementById('{{ modal_id }}').close();">Close</button>
+        {% endblock %}
+      </div>
+    </div>
+  </dialog>
+  

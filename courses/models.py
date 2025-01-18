@@ -6,6 +6,7 @@ from courses.fields import OrderField
 import helpers
 from pgvector.django import VectorField
 import cloudinary.uploader
+from cloudinary.utils import cloudinary_url
 
 helpers.cloudinary_init()
 
@@ -97,8 +98,7 @@ class Course(BaseContent):
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     likes = models.IntegerField(default=0)
     liked_by = models.ManyToManyField("accounts.customUser", through="Likes", related_name="liked_courses", blank=True)
-    pinecone_id = models.CharField(max_length=255, null=True, blank=True)  # Reference Pinecone vector ID
-
+    total_lessons = models.PositiveIntegerField(null=True, blank=True)
 
     total_ratings = models.PositiveIntegerField(default=0)
     updated_at = models.DateTimeField(auto_now=True)
@@ -114,6 +114,22 @@ class Course(BaseContent):
     @property
     def is_published(self):
         return self.status == PublishStatus.PUBLISHED
+    
+
+class CourseProgress(models.Model):
+    user = models.ForeignKey("accounts.customUser", on_delete=models.CASCADE, null=True, blank=True)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    completed_lessons = models.ManyToManyField('courses.Lesson', blank=True)
+    completed_on = models.DateTimeField(null=True, blank=True)
+
+    @property
+    def progress_percentage(self):
+        if self.course.total_lessons:
+            return (self.completed_lessons.count() / self.course.total_lessons) * 100
+        return 0
+
+    def __str__(self):
+        return f"{self.user.username} - {self.course.title}"
 
 class CourseMetrics(models.Model):
     course = models.OneToOneField(Course, on_delete=models.CASCADE, related_name='metrics')
@@ -192,10 +208,11 @@ class LessonVideo(models.Model):
         public_id_prefix=get_public_id_prefix,
         display_name=get_display_name,                
         blank=True, null=True, type='private',
+        
         tags=['video', 'lesson'], resource_type='video'
     )
-    
-    url = models.URLField(blank=True, null=True)
+    video_url = models.URLField(blank=True, null=True)
+
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -204,7 +221,16 @@ class LessonVideo(models.Model):
     def save(self, *args, **kwargs):
         if not self.public_id:
             self.public_id = generate_public_id(self, self.title)
-        super().save(*args, **kwargs)
+        elif self.video:
+            signed_url, options = cloudinary_url(
+                self.video.public_id,
+                resource_type='video', 
+                sign_url=True,   # This adds the signed URL feature
+                type='private'
+            )
+            self.video_url = signed_url
+            print(self.video_url)
+        super(LessonVideo, self).save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.title} - Lesson: {self.lesson.title}"

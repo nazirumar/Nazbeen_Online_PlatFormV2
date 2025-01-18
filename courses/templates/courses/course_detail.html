@@ -11,98 +11,127 @@
 </style>
 {% block content %}
   {% include "banner/banner.html" %}
-
-  <div class="text-center mx-auto mt-8">
-    <h3 class="text-4xl font-semibold text-gray-800">{{ course.subject.title }}</h3>
-    <span class="text-gray-600">Total Modules: {{ course.total_module }}</span>
-  </div>
-
-  <div class="max-w-full mx-auto mt-10 bg-white border border-gray-200 rounded-lg shadow-xl transition-all ease-in-out duration-300 hover:shadow-2xl dark:bg-gray-800 dark:border-gray-700">
-    {% if course.image %}
-      <div class="flex justify-center items-center">
-        <img class="w-full h-auto max-w-3xl object-cover rounded-t-lg" src="{{ course.image.url }}" alt="Course Image" />
-      </div>
-    {% endif %}
-
-    <div class="p-6">
-      <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{{ course.title }}</h5>
-      <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">Instructor: <span class="font-medium">{{ course.owner.username }}</span></p>
-      <p id="content" class="mb-4 font-normal text-gray-700 dark:text-gray-400">{{ course.description|truncatewords:50 }}</p>
-  
-      <button 
-          id="read-more-btn" 
-          data-url="{% url 'get_content' course.id %}" 
-          class="inline-flex items-center px-5 py-2 text-sm font-medium text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 transition duration-300">
-          Read more
-          <svg class="w-3.5 h-3.5 ml-2 rtl:rotate-180" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10" aria-hidden="true">
-              <path d="M1 5h12m0 0L9 1m4 4L9 9" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
-          </svg>
-      </button>
-  </div>
-  
-  </div>
-
-  <div class="flex justify-center mt-8">
-    <div class="w-full max-w-md bg-white border border-gray-200 rounded-lg shadow-xl dark:bg-gray-800 dark:border-gray-700">
-      <div class="p-6">
-        <div class="text-center py-3 mb-3">
-          <h5 class="text-xl font-semibold text-gray-900 dark:text-white">30-day Money-Back Guarantee</h5>
-          <h5 class="text-xl font-semibold text-gray-900 dark:text-white">Member price: $25.00</h5>
+  <div class="px-4 sm:px-6 lg:px-8">
+    <div class="text-center mx-auto mt-8">
+      <h3 class="text-2xl sm:text-3xl lg:text-4xl font-semibold text-gray-800">{{ course.subject.title }}</h3>
+      <span class="text-gray-600">Total Modules: {{ course.total_module }}</span>
+    </div>
+    <div class="shadow-md py-3">
+      <div class="flex flex-col lg:flex-row justify-center items-center lg:space-x-8">
+        <!-- Course Image -->
+        <div class="w-full lg:w-1/2 max-w-full mx-auto mt-10 bg-white border border-gray-200 rounded-lg shadow-lg dark:bg-gray-800 dark:border-gray-700">
+          {% if course.image %}
+            <div class="rounded-t-lg">
+              <img 
+                class="w-full h-52 sm:h-72 md:h-80 lg:h-96 object-cover rounded-t-lg" 
+                src="{{ course.image.url }}" 
+                alt="Course Image" 
+              />
+            </div>
+          {% endif %}
         </div>
-
-        <div class="text-center">
-          <div class="mb-4 text-3xl font-bold text-gray-900 dark:text-white">{{ course.price }}</div>
+  
+        <!-- Course Details -->
+        <div class="w-full lg:w-1/2 p-4 sm:p-6">
+          <h5 class="mb-2 text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 dark:text-white">
+            {{ course.title }}
+          </h5>
+          <p class="mb-3 text-sm sm:text-base lg:text-lg font-medium text-gray-700 dark:text-gray-400">
+            Instructor: <span class="font-medium">{{ course.owner.username }}</span>
+          </p>
+          <p id="content" class="mb-4 text-sm sm:text-base lg:text-lg text-gray-700 dark:text-gray-400">
+            {{ course.description|truncatewords:50 }}
+          </p>
+          <button 
+            id="read-more-btn" 
+            data-url="{% url 'get_content' course.id %}" 
+            class="inline-flex items-center px-4 py-2 text-sm sm:text-base font-medium text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 transition">
+            Read more
+            <svg class="w-4 h-4 ml-2 rtl:rotate-180" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10" aria-hidden="true">
+              <path 
+                d="M1 5h12m0 0L9 1m4 4L9 9" 
+                stroke="currentColor" 
+                stroke-linecap="round" 
+                stroke-linejoin="round" 
+                stroke-width="2" 
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+  
+      <!-- Progress Section -->
+      {% if progress %}
+        <div class="mt-4 px-4 sm:px-6 lg:px-8">
+          <div class="text-base font-medium text-gray-800 dark:text-white">{{ course.title }}</div>
+          <div class="w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700">
+            <div class="bg-blue-600 h-2 rounded-full dark:bg-blue-500" style="width: {{ progress.progress_percentage }}%"></div>
+          </div>
+          <p class="text-center mt-2">{{ progress.progress_percentage|floatformat:2 }}% completed</p>
+        </div>
+      {% else %}
+        <p class="mt-4 text-center text-gray-600">No progress yet. Start learning!</p>
+      {% endif %}
+    </div>
+  
+    <!-- Pricing and Enrollment Section -->
+    <div class="flex justify-center mt-8">
+      <div class="w-full max-w-md bg-white border border-gray-200 rounded-lg shadow-lg dark:bg-gray-800 dark:border-gray-700">
+        <div class="p-6 text-center">
+          <h5 class="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">30-day Money-Back Guarantee</h5>
+          <div class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">{{ course.price }}</div>
           {% if user.is_authenticated and is_enrolled %}
-            <p class="text-green-600 font-semibold">You are already enrolled in this course.</p>
+            <p class="text-green-600 font-semibold mt-2">You are already enrolled in this course.</p>
           {% else %}
             <form method="post" action="{% url 'student_enroll_course' course.public_id %}">
               {% csrf_token %}
               <input type="hidden" name="course_id" value="{{ course.public_id }}">
               <button 
                 type="submit" 
-                class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-6 py-3 transition duration-300">
+                class="mt-4 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg px-6 py-3 transition">
                 {% if user.is_authenticated %}Enroll in this course{% else %}Log in to Enroll{% endif %}
               </button>
             </form>
           {% endif %}
         </div>
       </div>
+    </div>
+  
+    <!-- Lessons Section -->
 
-      <div class="flex justify-end items-center mt-3 mb-5 mx-2">
-        <div class="flex items-center space-x-1 rtl:space-x-reverse">
-          {% for i in "1234" %}
-            <svg class="w-5 h-5 text-yellow-300" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 20" aria-hidden="true">
-              <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z" />
-            </svg>
-          {% endfor %}
-          <svg class="w-5 h-5 text-gray-200 dark:text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 20" aria-hidden="true">
-            <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z" />
-          </svg>
+    
+
+
+
+    <div class="mt-8">
+      <div class="flex items-center  my-2 shadow-sm  rounded-sm shadow-slate-400  justify-between">
+        <div>
+
+          <h4 class="text-2xl py-3 sm:text-3xl font-semibold text-gray-600">Lessons</h4>
         </div>
-        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded-full dark:bg-blue-200 dark:text-blue-800">
-          4.0/5.0
-        </span>
-      </div>
+       
+    </div>
+     
+      
+      {% for lesson in lessons %}
+      <div class="w-full my-1 text-gray-900 bg-white border border-gray-200 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+       <a href="{% url 'course_lesson_detail' course.public_id lesson.public_id %}">
+        <button type="button" class="relative inline-flex items-center w-full px-4 py-2 text-sm font-medium border-b border-gray-200 rounded-t-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:ring-gray-500 dark:focus:text-white">
+          <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+            <path stroke="currentColor" stroke-linejoin="round" stroke-width="2" d="M12.1429 11v9m0-9c-2.50543-.7107-3.19099-1.39543-6.13657-1.34968-.48057.00746-.86348.38718-.86348.84968v7.2884c0 .4824.41455.8682.91584.8617 2.77491-.0362 3.45995.6561 6.08421 1.3499m0-9c2.5053-.7107 3.1067-1.39542 6.0523-1.34968.4806.00746.9477.38718.9477.84968v7.2884c0 .4824-.4988.8682-1 .8617-2.775-.0362-3.3758.6561-6 1.3499m2-14c0 1.10457-.8955 2-2 2-1.1046 0-2-.89543-2-2s.8954-2 2-2c1.1045 0 2 .89543 2 2Z"/>
+          </svg>
+          
+            {{ forloop.counter }}.
+            {{ lesson.title|title }}
+        </button>
+      
+      </div></a>
+    
+      {% endfor %}
     </div>
   </div>
+  
 
-  <h4 class="text-3xl text-gray-600 mt-10">Lessons</h4>
-  <div class="text-dark p-6">
-    {% for video in course_videos %}
-    <div class="flex items-center gap-4 py-2">
-      <div>
-        <svg class="text-dark dark:text-dark w-6 h-6 p-1 rounded-full border border-gray-900" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4" d="M8 18V6l8 6-8 6Z" />
-        </svg>
-      </div>
-      <div>
-        <a href="{% url 'lesson_detail' course.public_id lesson_public_id %}" class="text-lg font-bold text-blue-700 hover:underline transition duration-300">
-          {{ video.title|title }}
-        </a>
-      </div>
-    </div>
-    {% endfor %}
-  </div>
 
   <script src="https://js.stripe.com/v3/"></script>
   <script>
@@ -163,6 +192,25 @@
         });
     }
 });
+
+
+document.querySelectorAll('.complete-lesson-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const lessonId = this.getAttribute('data-lesson-id');
+            const courseId = "{{ course.id }}";
+            fetch(`/complete-lesson/${courseId}/${lessonId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(`Progress updated: ${data.progress.toFixed(2)}%`);
+                location.reload();
+            });
+        });
+    });
 
   </script>
 {% endblock content %}

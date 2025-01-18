@@ -1,0 +1,64 @@
+{% extends "modal/base_modal.html" %}
+
+{% load custom_tags %}
+
+
+{% block modal_body %}
+<form method="post" enctype="multipart/form-data" class="space-y-6">
+  {% csrf_token %}
+  {{ form.non_field_errors }}
+  
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- Course Title -->
+    <div>
+      {{ form.title.label_tag }}
+      {{ form.title|add_class:"input-class" }}
+      {{ form.title.errors }}
+    </div>
+
+    <!-- Course Subject -->
+    <div>
+      {{ form.subject.label_tag }}
+      {{ form.subject|add_class:"input-class" }}
+      {{ form.subject.errors }}
+    </div>
+
+    <!-- Course Price -->
+    <div class="md:col-span-2">
+      {{ form.price.label_tag }}
+      {{ form.price|add_class:"input-class" }}
+      {{ form.price.errors }}
+    </div>
+
+    <!-- Access Level -->
+    <div>
+      {{ form.access.label_tag }}
+      {{ form.access|add_class:"input-class" }}
+      {{ form.access.errors }}
+    </div>
+
+    <!-- Course Status -->
+    <div>
+      {{ form.status.label_tag }}
+      {{ form.status|add_class:"input-class" }}
+      {{ form.status.errors }}
+    </div>
+
+    <!-- Course Image -->
+    <div>
+      {{ form.image.label_tag }}
+      {{ form.image|add_class:"input-class" }}
+      {{ form.image.errors }}
+    </div>
+  </div>
+
+  <div class="w-full">
+    {{ form.description.label_tag }}
+    {{ form.description|add_class:"textarea textarea-bordered textarea-xs w-full h-full" }}
+    {{ form.description.errors }}
+  </div>
+{% endblock %}
+
+{% block modal_footer %}
+<button type="submit" class="btn btn-primary btn-sm">Create Course</button>
+{% endblock %}

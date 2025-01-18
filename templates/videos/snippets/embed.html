@@ -1,11 +1,10 @@
-<!-- video player snippet -->
-<video id="demo-player"
-       class="cfe-video cld-video-player cld-video-player-skin-light"
-       controls
-       height="400"
-       data-cloud-name="{{ cloud_name }}"
-       data-video-url="{{ video_url }}"
-       data-cld-colors='{ "base": "{% if base_color %}{{ base_color }}{% else %}#000000{% endif %}", "accent": "#db8226", "text": "#fff" }'>
-    <source src="{{ video_url }}" type="video/mp4">
-    Your browser does not support the video tag.
-</video>
+<div class="relative w-full overflow-hidden" style="padding-top: 56.25%;">
+    <video class="absolute top-0 left-0 w-full h-full"
+           controls="{{ controls }}"
+           autoplay="{{ autoplay }}"
+           data-cloud-name="{{ cloud_name }}"
+           data-video-url="{{ video_url }}">
+        <source src="{{ video_url }}" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+</div>

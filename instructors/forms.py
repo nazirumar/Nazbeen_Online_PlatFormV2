@@ -48,7 +48,7 @@ class LessonForm(forms.ModelForm):
 class LessonVideoForm(forms.ModelForm):
     class Meta:
         model = LessonVideo
-        fields = ['title', 'lesson', 'duration', 'video', 'url']
+        fields = ['title', 'lesson', 'duration', 'video', 'video_url']
 
     def clean_video(self):
         video = self.cleaned_data.get('video')
@@ -87,4 +87,4 @@ enrollment_form = EnrollmentForm()
 class InstructorProfileForm(forms.ModelForm):
     class Meta:
         model = Instructor
-        fields = ['user', 'bio', 'profile_picture']
+        fields = ['user', 'bio', 'full_name', 'profile_picture']

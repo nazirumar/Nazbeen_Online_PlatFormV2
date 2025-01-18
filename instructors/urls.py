@@ -4,6 +4,7 @@ from . import views
 
 urlpatterns = [
     path('no-access/', views.no_access_view, name='no_access'),  # Add this line for the 'No Access' page
+    path('search/', views.generic_search_view, name='generic_search'),
 
       # CBV =============================================================
     path('instructor/dashboard/<slug:public_id>', views.InstructorDashboardView.as_view(), name='instructor_dashboard'),
@@ -18,7 +19,7 @@ urlpatterns = [
     path("<slug:public_id>/delete/", views.CourseDeleteView.as_view(), name="instructor_course_delete"),
     # =============================================================
     #  Modules 
-    path('module-list/',views.ModuleListView.as_view(),name='instructor_module_list'),
+    path('module-list/',views.ModuleListView.as_view(),name='instructor_modules_list'),
     path('module/<slug:public_id>/edit/',views.ModuleUpdateView.as_view(),name='instructor_module_update'),
     path('module/<slug:public_id>/delete/',views.ModuleDeleteView.as_view(),name='module_delete'),
     path('module/<slug:public_id>/module/create/', views.ModuleCreateView.as_view(), name='module_create'),

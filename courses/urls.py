@@ -14,7 +14,7 @@ urlpatterns = [
     path("course/<slug:course_id>/enroll/", views.student_enroll_course, name="student_enroll_course",),  # Enroll in a course
     # ===========
     # Lesson
-    path("courses/<slug:course_id>/lessons/<slug:lesson_id>",views.lesson_detail_view, name="lesson_detail",),  # Course details and modules
+    path("courses/<slug:course_id>/lessons/<slug:lesson_id>",views.lesson_detail_view, name="course_lesson_detail",),  # Course details and modules
     #  Module
     path("modules/<int:module_id>/courses/", views.module_courses, name="module_courses"),
     # path( "module/<slug:public_id>/", views.module_detail, name="module_detail"),  # Topics in a module

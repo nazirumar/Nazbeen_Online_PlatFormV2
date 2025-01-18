@@ -33,16 +33,18 @@ def get_course_lesson_videos(modules=None):
     try:
         all_videos = []
         last_lesson_public_id = None
+        all_lessons = []
 
         # Iterate through each module and fetch lessons and their videos
         for module in modules:
             lessons = module.lessons.all()
             for lesson in lessons:
+                print(lesson.title)
                 last_lesson_public_id = lesson.public_id
-                lesson_videos = lesson.videos.all()
-                all_videos.extend(lesson_videos)
-
-        return all_videos, last_lesson_public_id
+                # lesson_videos = lesson.videos.all()
+                all_lessons.extend(lessons)
+            
+        return all_lessons, last_lesson_public_id
 
     except Exception as e:
         # Log the error for debugging

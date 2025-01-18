@@ -1,75 +1,40 @@
-import json
-import requests
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from .pinecone_utils import get_similar_documents  # Helper for Pinecone queries
-from decouple import config
+from django.views.decorators.http import require_http_methods
+# from .pinecone_utils import search_similar_documents, generate_response_with_huggingface
 
-# Hugging Face API setup
-HF_API_URL = "https://api-inference.huggingface.co/models/gpt2"  # Switch to a stronger model if available
-HF_API_KEY = config('HF_API_KEY')
 
-# Function to call the Hugging Face API
-def generate_response_with_hf(query, context):
-    headers = {
-        "Authorization": f"Bearer {HF_API_KEY}",
-    }
-    # Payload combining query and context
-    payload = {
-        "inputs": f"""
-        User query: {query}
+
+@require_http_methods(["POST"])
+def chatbot_view(request):
+    pass
+    # try:
+    #     # Parse the request
+    #     data = json.loads(request.body)
+    #     user_query = data.get("query")
+    #     if not user_query:
+    #         return JsonResponse({"error": "Query is required."}, status=400)
+
+    #     # Identify the intent from the user query
+    #     intent = identify_intent(user_query)
         
-        Relevant Information:
-        {context}
-        
-        Response:
-        """,
-        "parameters": {
-            "max_length": 300,  # Limit response length
-            "temperature": 0.7,  # Balance between creativity and precision
-            "top_p": 0.5,       # Sampling to improve response diversity
-        }
-    }
-    try:
-        response = requests.post(HF_API_URL, headers=headers, json=payload, timeout=30)
-        response.raise_for_status()
-        return response.json()[0]["generated_text"]
-    except requests.RequestException as e:
-        return f"Error generating response: {e}"
+    #     # Search for relevant documents
+    #     search_results = search_similar_documents(user_query, top_k=3)
+    #     if not search_results:
+    #         return JsonResponse({"error": "No relevant courses found."}, status=404)
 
-@csrf_exempt
-def chat_with_bot(request):
-    if request.method == "POST":
-        try:
-            # Parse the user query
-            body = json.loads(request.body)
-            query = body.get("query", "").strip()
-            if not query:
-                return JsonResponse({"error": "No query provided."}, status=400)
+    #     # Process the response based on intent
+    #     if intent == "price":
+    #         response = "\n".join([f"The price of '{match['metadata'].get('title', 'Unknown Course')}' is ${match['metadata'].get('price', 'N/A')}." for match in search_results])
+    #     elif intent == "owner":
+    #         response = "\n".join([f"The owner/instructor of '{match['metadata'].get('title', 'Unknown Course')}' is {match['metadata'].get('instructor', 'Unknown')}." for match in search_results])
+    #     elif intent == "duration":
+    #         response = "\n".join([f"The duration of '{match['metadata'].get('title', 'Unknown Course')}' is {match['metadata'].get('duration', 'N/A')}." for match in search_results])
+    #     elif intent == "description":
+    #         response = "\n".join([f"The description of '{match['metadata'].get('title', 'Unknown Course')}' is: {match['metadata'].get('description', 'No description available.')}." for match in search_results])
+    #     else:
+    #         response = "I'm sorry, I didn't understand your question. Could you rephrase it?"
 
-            # Step 1: Retrieve relevant documents from Pinecone
-            results = get_similar_documents(query, top_k=5)  # Limit to top-5 documents
-
-            if not results:
-                return JsonResponse({"response": "Sorry, I couldn't find relevant information to assist you."}, status=200)
-
-            # Step 2: Build a concise and meaningful context
-            context_parts = []
-            for res in results:
-                metadata = res.get("metadata", {})
-                title = metadata.get("title", "")
-                description = metadata.get("description", "")
-                context_parts.append(f"Title: {title}\nDescription: {description}")
-            context = "\n".join(context_parts[:3])  # Limit to the top-3 results
-
-            # Step 3: Generate a response using the Hugging Face API
-            response = generate_response_with_hf(query, context)
-
-            return JsonResponse({"response": response}, status=200)
-
-        except json.JSONDecodeError:
-            return JsonResponse({"error": "Invalid JSON format."}, status=400)
-        except Exception as e:
-            return JsonResponse({"error": str(e)}, status=500)
-
-    return JsonResponse({"error": "Invalid request method."}, status=405)
+    #     return JsonResponse({"query": user_query, "response": response}, status=200)
+    
+    # except Exception as e:
+    #     return JsonResponse({"error": str(e)}, status=500)

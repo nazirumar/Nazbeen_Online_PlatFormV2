@@ -1,5 +1,22 @@
 {
   "devDependencies": {
-    "tailwindcss": "^3.4.14"
-  }
+    "daisyui": "^4.12.23",
+    "tailwindcss": "^3.4.17"
+  },
+  "dependencies": {
+    "audit": "^0.0.6",
+    "autoprefixer": "^10.4.20",
+    "fix": "^0.0.3",
+    "postcss": "^8.4.49"
+  },
+  "name": "nazbeen_online_platform",
+  "version": "1.0.0",
+  "description": "This project is a comprehensive e-learning platform built with Django, offering features for course management, user enrollment, lesson organization, and interactive quizzes. It allows instructors to create and manage courses, students to enroll, and facilitates learning through a structured model.",
+  "main": "tailwind.config.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }

@@ -2,7 +2,7 @@ from django.contrib import admin
 
 import helpers
 from .models import (Course, Likes, Category, Subject,
-                      Module, Lesson, LessonVideo, Notification, Student, Enrollment, Quiz, Question)
+                      Module,CourseProgress, Lesson, LessonVideo, Notification, Student, Enrollment, Quiz, Question)
 from django.utils.html import format_html
 # Customizing the Course Admin
 
@@ -40,6 +40,7 @@ class SubjectAdmin(admin.ModelAdmin):
 class CourseAdmin(admin.ModelAdmin):
     list_display = ('title', 'public_id',
                     'access', 'status','subject', 'price',
+                    'total_lessons',
                     'created_at', 'updated_at',
                     'image',
                    
@@ -75,6 +76,18 @@ class CourseAdmin(admin.ModelAdmin):
         return ", ".join([enrollment.course.title for enrollment in obj.enrollment_set.all()])
     get_enrolled_courses.short_description = 'Enrolled Courses'
 # Customizing the Module Admin
+
+@admin.register(CourseProgress)
+class CourseProgressAdmin(admin.ModelAdmin):
+    list_display = ('user',
+                    'course',
+                    'get_completed_lessons',
+                    'completed_on')
+    
+    def get_completed_lessons(self, obj):
+        return ", ".join([completed_lesson.title for completed_lesson in obj.completed_lessons.all()])
+    get_completed_lessons.short_description = 'completed_lessons'
+
 
 class LessonInline(admin.TabularInline):
     model = Lesson
@@ -188,3 +201,4 @@ admin.site.register(Likes, LikesAdmin)
 admin.site.register(Subject, SubjectAdmin)
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(LessonVideo, LessonVideoAdmin)
+

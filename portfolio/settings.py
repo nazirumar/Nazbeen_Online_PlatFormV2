@@ -81,6 +81,7 @@ INSTALLED_APPS = [
     "embed_video",
     "redisboard",
     'django_extensions',
+
     # 'daphne',
     'channels',
 
@@ -104,6 +105,8 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "django_htmx.middleware.HtmxMiddleware",
+
 ]
 
 ROOT_URLCONF = "portfolio.urls"

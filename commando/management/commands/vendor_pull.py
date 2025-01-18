@@ -19,7 +19,9 @@ VENDOR_STATICFILES = {
     "cloudinary.min.js": "https://cdnjs.cloudflare.com/ajax/libs/cloudinary-video-player/2.0.5/cld-video-player.min.js",
     "cld-video-player.min.css":"https://cdnjs.cloudflare.com/ajax/libs/cloudinary-video-player/2.0.5/cld-video-player.min.css",
     "cld-video-player.min.js":"https://cdn.jsdelivr.net/npm/cloudinary-video-player@2.1.0/dist/cld-video-player.min.js",
-    "htmx.min.js":"https://unpkg.com/htmx.org@2.0.2/dist/htmx.min.js"
+    "htmx.min.js":"https://unpkg.com/htmx.org@2.0.4/dist/htmx.min.js",
+    "daisyui.min.css":"https://cdn.jsdelivr.net/npm/daisyui@latest/dist/full.min.css",
+    'tailwind.min.css':"https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
     #   __________________
 }
 

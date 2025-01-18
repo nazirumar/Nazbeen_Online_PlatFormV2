@@ -2,12 +2,14 @@ from django.db import models
 from django.conf import settings
 
 from courses.models import Course, Student, generate_public_id
+from helpers.utils import compress_image
 
 # Create your models here.
 
 class Instructor(models.Model):
     public_id = models.CharField(max_length=130, blank=True, null=True, db_index=True)
     user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='instructors', on_delete=models.CASCADE)
+    full_name = models.CharField(max_length=130, blank=True, null=True, db_index=True)
     bio = models.TextField(blank=True)
     profile_picture = models.ImageField(upload_to='instructor_profiles/')
     created_at = models.DateTimeField(auto_now_add=True)
@@ -18,6 +20,8 @@ class Instructor(models.Model):
     def save(self, *args, **kwargs):
         if self.public_id == "" or self.public_id is None:
             self.public_id = generate_public_id(self.user.username)
+            if self.profile_picture and hasattr(self.profile_picture, 'file'):
+                self.profile_picture = compress_image(self.profile_picture)
         super().save(*args, **kwargs)
 
 

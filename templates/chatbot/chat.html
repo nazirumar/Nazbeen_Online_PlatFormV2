@@ -1,143 +1,127 @@
-<!-- Chatbot Button (Fixed at bottom-right corner) -->
-<div class="fixed bottom-6 right-6 z-10">
-    <button id="chatbotBtn" class="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-4 rounded-full shadow-xl hover:scale-105 transform transition-all duration-300 ease-in-out flex items-center justify-center space-x-2">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2C8.13 2 5 4.87 5 8c0 2.75 1.73 5.1 4.25 6.1A4.97 4.97 0 0110 18h4a4.97 4.97 0 011.75-3.9C17.27 13.1 19 10.75 19 8c0-3.13-3.13-6-7-6zm0 12H9v2h3v3l4-4-4-4v3z"/>
-        </svg>
-        <span class="text-lg font-semibold">Chat</span>
-    </button>
-</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chatbot</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@2.51.4/dist/full.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
 
-<!-- Chatbot Window -->
-<div id="chatbotWindow" class="fixed z-20 bottom-0 right-6 hidden w-96 h-[300px] bg-white shadow-2xl rounded-lg border border-gray-200 overflow-hidden transition-all duration-300 ease-in-out transform">
-    <div class="flex justify-between items-center bg-gradient-to-r from-blue-500 to-blue-600 text-white p-4 rounded-t-lg">
-        <h3 class="text-lg font-semibold">Chat with our bot</h3>
-        <button id="closeChat" class="text-white text-2xl hover:text-gray-300 focus:outline-none">&times;</button>
-    </div>
-    <div class="p-4 overflow-y-auto space-y-4 custom-scrollbar" id="chatContent">
-        <!-- Chat content will go here dynamically -->
-    </div>
-    <div class="p-4 bg-gray-100 border-t flex items-center space-x-3">
-        <!-- Chat Input Field -->
-        <input type="text" id="chatInput" placeholder="Type a message..." class="flex-grow p-3 text-lg bg-gray-200 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-600 transition-all duration-200 ease-in-out focus:shadow-lg">
+  <!-- Chatbot Floating Button -->
+  <button id="chatbot-btn" class="fixed bottom-8 right-8 w-16 h-16 bg-blue-500 text-white rounded-full shadow-lg hover:bg-blue-600">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 m-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-6a2 2 0 01-2-2v-2M8 17h2a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v2M17 8l-4.5 4.5m0 0L8 8m4.5 4.5V21" />
+    </svg>
+  </button>
 
-        <!-- Send Button -->
-        <button id="sendMessage" class="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-3 rounded-full hover:scale-110 transform transition-all duration-300 ease-in-out">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-            </svg>
+  <!-- Chat Modal -->
+  <div id="chat-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-lg w-full max-w-md">
+      <!-- Header -->
+      <div class="bg-blue-500 text-white text-lg font-bold py-4 px-6 flex justify-between items-center rounded-t-lg">
+        Chatbot
+        <button id="close-modal" class="text-white hover:text-gray-200">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
         </button>
+      </div>
+      
+      <!-- Chat Messages -->
+      <div id="chat-container" class="p-4 h-80 overflow-y-auto">
+        <!-- Sample messages -->
+        <div class="chat chat-start">
+          <div class="chat-bubble bg-gray-200">Hello! How can I help you today?</div>
+        </div>
+      </div>
+      
+      <!-- Input Area -->
+      <form id="chat-form" class="flex items-center gap-2 border-t p-4">
+        <input 
+          id="user-input" 
+          type="text" 
+          class="input input-bordered w-full" 
+          placeholder="Type your message..." 
+          required />
+        <button 
+          type="submit" 
+          class="btn btn-primary">
+          Send
+        </button>
+      </form>
     </div>
-</div>
+  </div>
 
-<!-- jQuery -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    // Toggle Modal
+    const chatbotBtn = document.getElementById('chatbot-btn');
+    const chatModal = document.getElementById('chat-modal');
+    const closeModal = document.getElementById('close-modal');
 
-<!-- JavaScript -->
-<script>
-    const chatbotBtn = document.getElementById('chatbotBtn');
-    const chatbotWindow = document.getElementById('chatbotWindow');
-    const closeChat = document.getElementById('closeChat');
-    const chatInput = document.getElementById('chatInput');
-    const sendMessage = document.getElementById('sendMessage');
-    const chatContent = document.getElementById('chatContent');
-
-    // Toggle chatbot visibility
     chatbotBtn.addEventListener('click', () => {
-        chatbotWindow.classList.toggle('hidden');
-        chatInput.focus();
+      chatModal.classList.remove('hidden');
     });
 
-    closeChat.addEventListener('click', () => {
-        chatbotWindow.classList.add('hidden');
+    closeModal.addEventListener('click', () => {
+      chatModal.classList.add('hidden');
     });
 
-    // Send message and handle responses
-    sendMessage.addEventListener('click', function () {
-        const message = chatInput.value.trim();
-        if (message) {
-            displayUserMessage(message);
-            chatInput.value = '';
+    // Handle Form Submission
+    const chatForm = document.getElementById('chat-form');
+    const chatContainer = document.getElementById('chat-container');
+    const userInput = document.getElementById('user-input');
 
-            // Simulate bot response (replace with your API logic)
-            fetchBotResponse(message);
-        }
-    });
+    chatForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const userMessage = userInput.value;
 
-    chatInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-            sendMessage.click();
-        }
-    });
+      // Add User Message to Chat
+      const userBubble = document.createElement('div');
+      userBubble.className = 'chat chat-end';
+      userBubble.innerHTML = `<div class="chat-bubble bg-blue-500 text-white">${userMessage}</div>`;
+      chatContainer.appendChild(userBubble);
 
-    function displayUserMessage(message) {
-        const messageDiv = document.createElement('div');
-        messageDiv.classList.add('text-sm', 'bg-blue-100', 'p-3', 'rounded-lg', 'self-end', 'max-w-xs');
-        messageDiv.innerHTML = `<p>${message}</p>`;
-        chatContent.appendChild(messageDiv);
-        chatContent.scrollTop = chatContent.scrollHeight;
-    }
+      // Scroll to the bottom
+      chatContainer.scrollTop = chatContainer.scrollHeight;
 
-    function displayBotResponse(response) {
-    const messageDiv = document.createElement('div');
-    messageDiv.classList.add('text-sm', 'bg-gray-100', 'p-3', 'rounded-lg', 'max-w-xs');
-    chatContent.appendChild(messageDiv);
+      // Clear input field
+      userInput.value = '';
 
-    let index = 0;
-    const streamInterval = setInterval(() => {
-        if (index < response.length) {
-            messageDiv.innerHTML += response[index];
-            chatContent.scrollTop = chatContent.scrollHeight;
-            index++;
-        } else {
-            clearInterval(streamInterval);
-        }
-    }, 10); // Adjust speed (in milliseconds) for faster or slower streaming
-}
-
-
-    function fetchBotResponse(userMessage) {
-        // Replace this with your chatbot API call logic
-        const chatbotUrl = '/chatbot/chat/'; // Adjust as necessary
-
-        $.ajax({
-            url: chatbotUrl,
-            method: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify({ query: userMessage }),
-            success: function (data) {
-                displayBotResponse(data.response || 'Sorry, I couldn\'t understand that.');
-            },
-            error: function () {
-                displayBotResponse('An error occurred while connecting to the server.');
-            }
+      // Fetch Bot Response
+      try {
+        const response = await fetch('/chatbot/chatbot/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ query: userMessage }),
         });
-    }
-</script>
 
-<!-- Custom Scrollbar CSS -->
-<style>
-    /* Custom Scrollbar Styles */
-    .custom-scrollbar::-webkit-scrollbar {
-        width: 8px;
-    }
+        const data = await response.json();
+        const botMessage = data.response || 'Sorry, something went wrong.';
 
-    .custom-scrollbar::-webkit-scrollbar-thumb {
-        background: #4A90E2;
-        border-radius: 10px;
-    }
+        // Add Bot Response to Chat
+        const botBubble = document.createElement('div');
+        botBubble.className = 'chat chat-start';
+        botBubble.innerHTML = `<div class="chat-bubble bg-gray-200">${botMessage}</div>`;
+        chatContainer.appendChild(botBubble);
 
-    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-        background: #357ABD;
-    }
+        // Scroll to the bottom
+        chatContainer.scrollTop = chatContainer.scrollHeight;
 
-    .custom-scrollbar::-webkit-scrollbar-track {
-        background: #f1f1f1;
-    }
+      } catch (error) {
+        console.error('Error:', error);
+        const errorBubble = document.createElement('div');
+        errorBubble.className = 'chat chat-start';
+        errorBubble.innerHTML = `<div class="chat-bubble bg-red-500 text-white">Error connecting to chatbot.</div>`;
+        chatContainer.appendChild(errorBubble);
 
-    /* Smooth Scroll for chat content */
-    #chatContent {
-        scroll-behavior: smooth;
-        height: 200px;
-    }
-</style>
+        // Scroll to the bottom
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+      }
+    });
+  </script>
+</body>
+</html>

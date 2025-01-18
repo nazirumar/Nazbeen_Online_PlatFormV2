@@ -1,0 +1,177 @@
+{% extends "instructor/base.html" %}
+
+{% load custom_tags %}
+
+
+{% block content_dashboard %}
+
+<!-- Open the modal using ID.showModal() method -->
+
+<button class="btn btn-outline" onclick="my_modal_1.showModal()">
+   {% include 'icons/plus.html' %}
+      
+</button>
+
+<div class="block max-w-full mx-auto p-1 mt-4 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+<div class="relative overflow-x-auto mt-4 whitespace-nowrap">
+    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400"id="courses-table" hx-get="courses-list/" hx-trigger="load, change" hx-target="#courses-table">
+        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+            <tr>
+                <th scope="col" class="px-4 py-2">
+                No:
+                </th>
+                <th scope="col" class="px-4 py-2">
+                    Title
+                </th>
+                <th scope="col" class="px-4 py-2">
+                   Subject
+                </th>
+                <th scope="col" class="px-4 py-2">
+                   Status
+                </th>
+                <th scope="col" class="px-4 py-2">
+                    Edit
+                </th>
+                <th scope="col" class="px-4 py-2">
+                    Delete
+                </th>
+               
+            </tr>
+        </thead>
+        <tbody >
+                {% for course in courses %}
+
+            <tr class="bg-white dark:bg-gray-800">
+                <th scope="row" class="px-4 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                    {{ forloop.counter }}
+
+                </th>
+                <th scope="row" class="px-4 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                    {{ course.title }}
+
+                </th>
+                <td class="px-4 py-2">
+                    {{ course.subject.title }}
+
+                </td>
+                <td class="px-4 py-2">
+                    {{ course.access }}
+
+                </td>
+                <td class="px-4 py-2">
+                    <a href="{% url 'instructor_course_edit' course.public_id %}">
+                        <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z"/>
+                          </svg>
+                          
+                    </a>
+
+                </td>
+                <td class="px-4 py-2">
+                  <a href="#" 
+                  class="text-red-600 hover:underline deleteButton" 
+                  data-delete-url="{% url 'instructor_course_delete' course.public_id %}"
+                  data-title="{{ course.title }}">
+                   <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                       <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z"/>
+                   </svg>
+               </a>
+
+                </td>
+              
+            </tr>
+            {% empty %}
+                <p>You haven't created any courses yet.</p>
+                {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+</div>
+{% include 'instructor/components/delete_confirmation_modal.html' %}
+<!-- Main modal -->
+
+<!-- Open the modal using ID.showModal() method -->
+<dialog id="my_modal_1" class="modal">
+  <div class="modal-box">
+    <!-- Close Button -->
+    <form method="dialog" class="absolute right-2 top-2">
+      <button class="btn btn-sm btn-circle btn-ghost">✕</button>
+    </form>
+
+    <!-- Modal Title -->
+    <h3 class="text-lg font-bold mb-4">New Course</h3>
+
+    <!-- Modal Content -->
+    <div class="modal-action">
+      <form method="post" enctype="multipart/form-data" class="space-y-6">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+
+        <!-- Two-column grid layout -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Course Title -->
+          <div>
+            {{ form.title.label_tag }}
+            {{ form.title|add_class:"input input-bordered w-full" }}
+            {{ form.title.errors }}
+          </div>
+
+          <!-- Course Subject -->
+          <div>
+            {{ form.subject.label_tag }}
+            {{ form.subject|add_class:"input input-bordered w-full" }}
+            {{ form.subject.errors }}
+          </div>
+
+          <!-- Course Price -->
+          <div class="md:col-span-2">
+            {{ form.price.label_tag }}
+            {{ form.price|add_class:"input input-bordered w-full" }}
+            {{ form.price.errors }}
+          </div>
+
+          <!-- Access Level -->
+          <div>
+            {{ form.access.label_tag }}
+            {{ form.access|add_class:"input input-bordered w-full" }}
+            {{ form.access.errors }}
+          </div>
+
+          <!-- Course Status -->
+          <div>
+            {{ form.status.label_tag }}
+            {{ form.status|add_class:"input input-bordered w-full" }}
+            {{ form.status.errors }}
+          </div>
+
+          <!-- Course Image -->
+          <div class="md:col-span-2">
+            {{ form.image.label_tag }}
+            {{ form.image|add_class:"file-input file-input-bordered w-full" }}
+            <p class="mt-1 text-sm text-gray-500">SVG, PNG, JPG, or GIF (MAX. 800x400px).</p>
+            {{ form.image.errors }}
+          </div>
+        </div>
+
+        <!-- Course Description -->
+        <div class="w-full">
+          {{ form.description.label_tag }}
+          <textarea
+            name="description"
+            placeholder="e.g., This course is about..."
+            class="textarea textarea-bordered w-full h-32"></textarea>
+          {{ form.description.errors }}
+        </div>
+
+        <!-- Submit Button -->
+        <div class="flex justify-end">
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</dialog>
+
+
+{% endblock content_dashboard %}

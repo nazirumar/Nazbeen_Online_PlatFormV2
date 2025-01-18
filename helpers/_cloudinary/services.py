@@ -37,14 +37,18 @@ def get_cloudinary_video_object(instance,
                                 quality = "auto",
                                 controls=True,
                                 autoplay=True,
+                                css_classes=None,
                                 ):
     if not hasattr(instance, field_name):
          return ""
     video_object = getattr(instance, field_name)
     if not video_object:
         return ""
+    
     video_options = {
+        "resource_type": "video",
         "sign_url": sign_url,
+        "type": "private",
         "fetch_format": fetch_format,
         "quality": quality,
         "controls": controls,
@@ -61,6 +65,10 @@ def get_cloudinary_video_object(instance,
         template_name = "videos/snippets/embed.html"
         tmpl = get_template(template_name)
         cloud_name = settings.CLOUDINARY_CLOUD_NAME
-        _html = tmpl.render({'video_url': url, 'cloud_name': cloud_name, 'base_color': "#007cae"})
+        _html = tmpl.render({'video_url': url,
+                              'cloud_name': cloud_name, 
+                              'base_color': "#007cae",
+                              "css_classes": css_classes or "responsive-video",
+                              })
         return _html
     return url
